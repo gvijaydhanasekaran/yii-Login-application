@@ -27,7 +27,7 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('create', 'view', 'index', 'activate'),
+				'actions'=>array('create', 'view', 'index', 'activate', 'changepassword'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -44,6 +44,30 @@ class UserController extends Controller
 		);
 	}
 
+	public function actionChangepassword($id='')
+	{
+		$model = $this->loadModel($id);
+		$model->password = '';
+
+		// Uncomment the following line if AJAX validation is needed
+		$this->performAjaxValidation($model);
+
+		if(isset($_POST['User']))
+		{
+			$model->attributes=$_POST['User'];
+			$model->password_hash = '';
+			$model->password_hash_at = '';
+			if($model->save()){
+				// print_r(User::sendMail());exit();
+				$this->redirect(array('view','id'=>$model->id));
+			}
+		}
+
+		$this->render('changepassword',array(
+			'model'=>$model,
+		));
+	}
+
 	public function actionActivate($key = '')
 	{
 		if($key){
@@ -58,7 +82,7 @@ class UserController extends Controller
 					$msg = "Url was expired. Try again";
 					$this->redirect(array('site/notification','msg'=>$msg));
 				} else {
-					$this->redirect(array('resetpassword','id'=>$model->id));
+					$this->redirect(array('changepassword','id'=>$model->id));
 				}
 			}
 		}
@@ -70,8 +94,8 @@ class UserController extends Controller
 	public function actionView($id)
 	{
 		$model = $this->loadModel($id);
-		print_r($model->sendMail());
-		exit();
+		// print_r($model->sendMail());
+		// exit();
 
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
