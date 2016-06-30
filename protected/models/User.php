@@ -65,7 +65,8 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('first_name, last_name, username, password', 'required'),
+			array('first_name, last_name, username, password, email', 'required', 'on' => 'insert'),
+			array('email','required','on' => 'reset-password'),
 			array('email','email'),
 			array('first_name, last_name, username, password_hint, created_ip', 'length', 'max'=>100),
 			array('email', 'length', 'max'=>155),
@@ -256,32 +257,86 @@ class User extends CActiveRecord
 		}
 	}
 
-	public function setPasswordHashKey()
+	public function setPasswordHashKey($flag)
 	{
 		$user = User::model()->findByPk($this->id);
 		$user->password_hash = md5($this->email);
-		$user->password_hash_at = new CDbExpression('NOW()');
+		if($flag == 1){
+			$user->password_hash_at = new CDbExpression('NOW()');
+		} else {
+			$user->password_hash_at = '0000-00-00 00:00:00';
+		}
+		
 		$user->save(false);
 	}
 
-	public function sendMail()
+	public function sendResetMail()
 	{
-		$link = yii::app()->createUrl("user/activate", array('key'=> md5($this->email)));
+		// $link = yii::app()->createUrl("user/activate", array('key'=> md5($this->email)));
+		$link = Yii::app()->getBaseUrl(true) . "/index.php?r=user/activate&key=".md5($this->email);
 		$msg = "Dear ".$this->first_name.", <br> Please click This link to reset the password <b> 
 			<a target='_blank' href='".$link."'> Reset Password</a></b><br>
 			Thanks,<br>
 			Registration Team";
 
 		// return yii::app()->createUrl("user/activate", array('key'=>'vijay'));
+		$this->setPasswordHashKey(1);
 		if(Yii::app()->params['sendEmail']){
-			$this->setPasswordHashKey();
-			return Yii::app()->getController()->redirect(array('site/notification','msg'=>$msg));
+			$successMsg = "Reset mail has been send to your mail id. Please follow this link to reset the password";
+			$this->sendMail($this->email, "Reset Password", $msg, $successMsg);
+			// return Yii::app()->getController()->redirect(array('site/notification','msg'=>$msg));
 		} else {
-			$this->setPasswordHashKey();
-			// print_r("expression");exit();
 			return Yii::app()->getController()->redirect(array('site/notification','msg'=>$msg));
 		}
-		print_r($this->id);exit();
+	}
 
+	public function sendActivationMail()
+	{
+		// $link = yii::app()->createUrl("user/newActivation", array('key'=> md5($this->email)));
+		$link = Yii::app()->getBaseUrl(true) . "/index.php?r=user/newActivation&key=".md5($this->email);
+		
+		$msg = "Dear ".$this->first_name.", <br> You've successfully registered. Please click This link to activate your account <b> 
+			<a target='_blank' href='".$link."'> Activate Account click me..!</a></b><br>
+			Thanks,<br>
+			Registration Team";
+
+		// return yii::app()->createUrl("user/activate", array('key'=>'vijay'));
+		$this->setPasswordHashKey(0);
+		if(Yii::app()->params['sendEmail']){
+			$successMsg = "Activation mail has been send to your mail id. Please follow this link to activate your account";
+			$this->sendMail($this->email, "Account Activation", $msg, $successMsg);
+			return Yii::app()->getController()->redirect(array('site/login'));
+		} else {
+			return Yii::app()->getController()->redirect(array('site/notification','msg'=>$msg));
+		}
+	}
+
+	public function sendMail($email = '', $subject = '', $body = '', $msg)
+	{
+		$mail = new PHPMailer(); // create a new object
+		$mail->IsSMTP(); // enable SMTP
+		$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+		$mail->SMTPAuth = true; // authentication enabled
+		$mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for Gmail
+		$mail->Host = "smtp.gmail.com";
+		$mail->Port = 465; // or 587
+		$mail->IsHTML(true);
+		$mail->Username = Yii::app()->params['gmailId'];
+		$mail->Password = Yii::app()->params['password'];
+		$mail->SetFrom("example@gmail.com");
+		$mail->Subject = $subject;
+		$mail->Body = $body;
+		$mail->AddAddress($email);
+
+		 if(!$mail->Send()) {
+		 	$msg = "Server Problem So try next time";
+		 	return Yii::app()->getController()->redirect(array('site/notification','msg'=>$msg));
+		    echo "Mailer Error: " . $mail->ErrorInfo;
+		    return false;
+		 } else {
+		 	return Yii::app()->getController()->redirect(array('site/notification','msg'=>$msg));
+		    echo "Email has been sent";
+		    return true;
+		 }
 	}
 }

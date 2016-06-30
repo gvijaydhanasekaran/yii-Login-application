@@ -9,13 +9,15 @@ $this->breadcrumbs=array(
 );
 ?>
 
+<?php //echo CHttpRequest::userHostAddress(); ?>
 <h1>Login 
-	<?php print_r(CHttpRequest::getUserHostAddress());?> <br>
-	<?php print_r(ip2long(CHttpRequest::getUserHostAddress())); ?><br>
-	<?php print_r(Yii::app()->request->getUserHostAddress()); ?> <br>
+	<?php //print_r(CHttpRequest::getUserHostAddress());?> <br>
+	<?php //print_r(ip2long(CHttpRequest::getUserHostAddress())); ?><br>
+	<?php //print_r(Yii::app()->request->getUserHostAddress()); ?> <br>
 	<?php print_r(Yii::app()->request->userHostAddress); ?> <br>
-	<?php print_r($_SERVER['REMOTE_ADDR']); ?><br>
-	<?php print_r($_SERVER['HTTP_USER_AGENT']); ?>
+	<?php //print_r($_SERVER['REMOTE_ADDR']); ?><br>
+	<?php //print_r($_SERVER['HTTP_USER_AGENT']); ?>
+	<?php //echo User::getPasswordHint("Test123"); ?>
 </h1>
 
                 

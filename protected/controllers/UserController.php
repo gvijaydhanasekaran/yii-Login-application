@@ -27,7 +27,7 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('create', 'view', 'index', 'activate', 'changepassword'),
+				'actions'=>array('create', 'view', 'index', 'activate', 'changepassword', 'forgetpassword', 'newActivation'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -42,6 +42,38 @@ class UserController extends Controller
 				'users'=>array('*'),
 			),
 		);
+	}
+
+	public function actionForgetpassword()
+	{
+		$model =  new User();
+		$model->password = '';
+		$model->scenario = "reset-password";
+		// Uncomment the following line if AJAX validation is needed
+		$this->performAjaxValidation($model);
+
+		if(isset($_POST['User']))
+		{
+			$model->attributes=$_POST['User'];
+			$model->scenario = "reset-password";
+
+			if($model->validate()){
+				$userModel = User::model()->findByAttributes(array('email' => $model->email));
+				if($userModel) {
+					if($userModel->status == User::ACTIVED)
+						$userModel->sendResetMail();
+					else
+						$userModel->sendActivationMail();
+				} else {
+					$msg = "Email not found in our database. Please sign up";
+					$model->addError('email', $msg);
+				}
+			}
+		}
+
+		$this->render('forgetPassword',array(
+			'model'=>$model,
+		));
 	}
 
 	public function actionChangepassword($id='')
@@ -68,6 +100,26 @@ class UserController extends Controller
 		));
 	}
 
+	public function actionNewActivation($key = '')
+	{
+		if($key){
+			$model = User::model()->findByAttributes(array('password_hash' => $key));
+			if($model) {
+				$sql = "UPDATE `user` SET `status`='".User::ACTIVED."' WHERE `id`='".$model->id."'";
+				// print_r($sql);exit();
+				// $data = Yii::app()->db->createCommand($sql)->queryAll();
+				$model->status = User::ACTIVED;
+				$model->password_hash = '';
+				$model->password_hash_at = '';
+				$model->update();
+					$msg = "Account Activated successfully";
+			} else {
+				$msg = "URL has been expired.";
+			}
+			$this->redirect(array('site/notification','msg'=>$msg));
+		}
+	}
+
 	public function actionActivate($key = '')
 	{
 		if($key){
@@ -87,6 +139,7 @@ class UserController extends Controller
 			}
 		}
 	}
+
 	/**
 	* Displays a particular model.
 	* @param integer $id the ID of the model to be displayed
@@ -109,16 +162,18 @@ class UserController extends Controller
 	public function actionCreate()
 	{
 		$model=new User;
-		// print_r(User::checkUser());exit();
+		
 		// Uncomment the following line if AJAX validation is needed
 		$this->performAjaxValidation($model);
 
 		if(isset($_POST['User']))
 		{
-		$model->attributes=$_POST['User'];
+			$model->attributes=$_POST['User'];
+			$model->status = User::PENDING;
 			if($model->save()){
+				$model->sendActivationMail();
 				// print_r(User::sendMail());exit();
-				$this->redirect(array('view','id'=>$model->id));
+				// $this->redirect(array('view','id'=>$model->id));
 			}
 		}
 
