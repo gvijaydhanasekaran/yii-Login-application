@@ -10,6 +10,20 @@ array('label'=>'Manage User','url'=>array('admin')),
 );
 ?>
 
-<h1>Create User</h1>
+<div class="row">
+     <!-- page header -->
+    <div class="col-lg-12">
+        <h1 class="page-header">Registration Form</h1>
+    </div>
+    <!--end page header -->
+</div>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+				<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+			</div>
+		</div>
+	</div>
+</div>

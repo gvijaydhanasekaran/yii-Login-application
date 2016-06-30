@@ -23,9 +23,10 @@ class SiteController extends Controller
 
 	public function actionNotification($msg = '')
 	{
-		print_r($msg);exit();
+		// print_r($msg);exit();
+		$this->render('notification', array('msg' => $msg));
 		// $this->redirect(array('notification', 'msg' => $msg));
-		$this->redirect(array('view','msg'=>$msg));
+		// $this->redirect(array('view','msg'=>$msg));
 	}
 	/**
 	 * This is the default 'index' action that is invoked

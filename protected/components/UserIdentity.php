@@ -28,6 +28,8 @@ class UserIdentity extends CUserIdentity
             $this->errorCode = self::ERROR_PASSWORD_INVALID;            
         }else {
             $this->_id = $user->id;
+			yii::app()->user->setState('userSessionTimeout', (time()+Yii::app()->params['loginTimeoutSeconds']));
+
             $this->errorCode = self::ERROR_NONE;
         }
         return !$this->errorCode;

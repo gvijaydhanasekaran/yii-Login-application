@@ -27,11 +27,11 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('create', 'view', 'index', 'activate', 'changepassword', 'forgetpassword', 'newActivation'),
+				'actions'=>array('create', 'index', 'activate', 'changepassword', 'forgetpassword', 'newActivation'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('update'),
+				'actions'=>array('update', 'view'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -190,7 +190,7 @@ class UserController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-
+		unset($model->password);
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 

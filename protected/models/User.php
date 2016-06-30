@@ -65,7 +65,8 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('first_name, last_name, username, password, email', 'required', 'on' => 'insert'),
+			array('first_name, last_name, username, password, email, user_type', 'required', 'on' => 'insert'),
+			array('first_name, last_name, username, email, user_type', 'required', 'on' => 'update'),
 			array('email','required','on' => 'reset-password'),
 			array('email','email'),
 			array('first_name, last_name, username, password_hint, created_ip', 'length', 'max'=>100),
@@ -202,8 +203,8 @@ class User extends CActiveRecord
   	{
 	    if ($this->isNewRecord) {
 	        $this->created_at = new CDbExpression('NOW()');
-	        // $this->created_ip = Yii::app()->request->userHostAddress;
-	        $this->created_ip = '123.456.789.123';
+	        $this->created_ip = Yii::app()->request->userHostAddress;
+	        // $this->created_ip = '123.456.789.123';
 	        if(Yii::app()->params['sendEmail']){
 	        	$this->status = self::PENDING;
 	        } else {

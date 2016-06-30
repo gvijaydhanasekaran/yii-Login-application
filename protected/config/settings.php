@@ -10,7 +10,11 @@ $params = array(
 		'adminEmail'=>'webmaster@example.com',
 		'sendEmail' => False,
 		'stopMutiLogin' => False,
-		'gmailId' => 'Your gmail id here',
-		'password' => 'Your gmail password here'
+		'gmailId' => 'Your gmail Id here',
+		'password' => 'Your gmail Id Password here',
+		// 'loginTimeoutSeconds'=>5*60,  //timeout value in seconds
+		'loginTimeoutSeconds'=> 5*60,  //timeout value in seconds
+		'activateRememberMeOption'=>False,  //timeout value in seconds
+		'rememberMeDuration'=>3600*24*30,  //30 Days
 	);
 ?>
