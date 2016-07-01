@@ -20,7 +20,7 @@
 	
 	<?php echo $form->passwordFieldGroup($model,'confirmPassword',array('widgetOptions'=>array('htmlOptions'=>array('class'=>'span5','maxlength'=>255)))); ?>
 
-	<?php echo $form->textFieldGroup($model,'password_hint',array('widgetOptions'=>array('htmlOptions'=>array('class'=>'span5','maxlength'=>100)))); ?>
+	<?php //echo $form->textFieldGroup($model,'password_hint',array('widgetOptions'=>array('htmlOptions'=>array('class'=>'span5','maxlength'=>100)))); ?>
 
 	<?php //echo $form->dropDownListGroup($model,'user_type', array('widgetOptions'=>array('data'=>array("C"=>"C","F"=>"F","E"=>"E",), 'htmlOptions'=>array('class'=>'input-large')))); ?>
 

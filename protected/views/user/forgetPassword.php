@@ -13,7 +13,7 @@
 	<?php $this->widget('booster.widgets.TbButton', array(
 			'buttonType'=>'submit',
 			'context'=>'primary',
-			'label'=>$model->isNewRecord ? 'Create' : 'Reset Password',
+			'label'=>$model->isNewRecord ? 'Reset Password' : 'Reset Password',
 		)); ?>
 </div>
 

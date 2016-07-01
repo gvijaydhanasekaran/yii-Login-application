@@ -48,8 +48,8 @@ return false;
 		'last_name',
 		'email',
 		'username',
-		'password',
-		/*
+		/*'password',
+		
 		'password_hint',
 		'user_type',
 		'status',

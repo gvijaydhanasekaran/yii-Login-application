@@ -27,15 +27,15 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('create', 'index', 'activate', 'changepassword', 'forgetpassword', 'newActivation'),
+				'actions'=>array('create', 'activate', 'changepassword', 'forgetpassword', 'newActivation'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('update', 'view'),
+				'actions'=>array('update', 'view', 'admin', 'delete', 'index'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
+				'actions'=>array(),
 				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
@@ -109,6 +109,7 @@ class UserController extends Controller
 				// print_r($sql);exit();
 				// $data = Yii::app()->db->createCommand($sql)->queryAll();
 				$model->status = User::ACTIVED;
+				$model->activated_at = new CDbExpression('NOW()');
 				$model->password_hash = '';
 				$model->password_hash_at = '';
 				$model->update();
